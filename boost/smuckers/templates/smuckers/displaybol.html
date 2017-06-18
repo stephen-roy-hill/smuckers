@@ -31,25 +31,37 @@
 	        </div><!--/.nav-collapse -->
 	      </div>
 	    </nav>
-	    <div>
-	    	{% block content %}
-			  <form method="post" enctype="multipart/form-data">
-			  	{% csrf_token %}
-				  <div class="form-group">
-				    <label for="dockNumber">Dock Number</label>
-				    <input type="text" name="dock_number" class="form-control" id="dockNumber" placeholder="Dock number"/>
-				  </div>
-				  <div class="form-group">
-				    <label for="sealNumber">Seal Number</label>
-				    <input type="password" name="seal_number" class="form-control" id="sealNumber" placeholder="Seal number"/>
-				  </div>
-				  <div class="form-group">
-				  	<label for="inputFile">Input File</label>
-				  	<input type="file" name="inputfile" class="form-control" id="inputFile"/>
-				  </div>
-				  <button type="submit" class="btn btn-default">Submit</button>
-				</form>
-			{% endblock %}
-	    </div>
+	    	<form action="/smuckers/bolpost/" method="post" class="col-md-6" style="margin: 0 auto; float:none;">
+	    	{% csrf_token %}
+		    	<table class="table">
+		    	<input type="hidden" name="id" value="{{bol.id}}"/>
+		    	{{bolForm}}
+		    	<tr>
+		    		<td></td>
+			    	<td>
+			    		<button type="submit" class="btn btn-default" style="text-align: center">Submit</button>
+			    	</td>
+		    	</tr>
+		    	</table>
+		    </form>
+			    {% for bolItem in bolItemsForm %}
+			    	<form action="/smuckers/bolitempost/" method="post" class="col-md-6" style="margin: 0 auto; float:none;">
+			    	{% csrf_token %}
+				    	<table class="table">
+				    	<input type="hidden" name="id" value="{{bolItem.item.id}}"/>
+				    	<input type="hidden" name="bol_id" value="{{bol.id}}"/>
+				    		{{bolItem.form}}
+				    		<tr>
+				    			<td></td>
+				    			<td>
+				    				<button type="submit" class="btn btn-default">Submit</button>
+				    			</td>
+				    		</tr>
+				    	</table>
+			    	</form>
+		    	{% endfor %}
+	    	</form>
+	    	<a href="/smuckers/{{ bol.id }}/approvebol">Approve</a><br/>
+	    	<a href="/smuckers/{{ bol.id }}/downloadbol">Download</a>
 	</body>
 </html>
