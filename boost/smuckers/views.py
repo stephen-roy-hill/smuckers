@@ -252,7 +252,7 @@ def loginPost(request):
 			return redirect('/smuckers/enter-data')
 		elif request.user.groups.filter(name='Truck').exists():
 			return redirect('/smuckers/display-data')
-		return redirect('/smuckers')
+		return redirect('/smuckers/display-manager')
 	else:
 		return redirect('/smuckers/login')
 
