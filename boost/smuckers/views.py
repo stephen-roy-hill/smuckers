@@ -15,13 +15,35 @@ from openpyxl.writer.excel import save_virtual_workbook
 import math
 import datetime
 
+#admin:B00st123
+
+#forklift_user
+#guest123
+
+#truck_user
+#guest123
+
+#manager_user
+#guest123
+
+
 def index(request):
     return render(request, 'smuckers/index.html')
 
 def display(request):
-    bols = Bol.objects.filter(approved=False).values()
-    context = {'bols': bols}
-    return render(request, 'smuckers/display.html', context)
+	bols = Bol.objects.filter(truck_approved=False).values()
+	context = {'bols': bols}
+	return render(request, 'smuckers/display.html', context)
+
+def displayManager(request):
+	bols = Bol.objects.filter(approved=False).filter(truck_approved=True).values()
+	context = {'bols': bols}
+	return render(request, 'smuckers/display.html', context)
+
+def displayAll(request):
+	bols = Bol.objects.all().values()
+	context = {'bols': bols}
+	return render(request, 'smuckers/display.html', context)
 
 def displaybol(request, bol_id):
 	bol = Bol.objects.get(id=bol_id)
@@ -38,11 +60,31 @@ def displaybol(request, bol_id):
 
 def approvebol(request, bol_id):
 	bol = Bol.objects.get(id=bol_id)
-	bol.approved = True;
+	if request.user.groups.filter(name='Truck').exists():
+		bol.truck_approved = True;
+	else:
+		bol.approved = True;
 	bol.save();
 	bols = Bol.objects.filter(approved=False).values()
 	context = {'bols': bols}
-	return redirect('/smuckers/display-data')
+
+	if request.user.groups.filter(name='Truck').exists():
+		return redirect('/smuckers/display-data')
+	return redirect('/smuckers/display-manager')
+
+def unapprovebol(request, bol_id):
+	bol = Bol.objects.get(id=bol_id)
+	if request.user.groups.filter(name='Truck').exists():
+		bol.truck_approved = False;
+	else:
+		bol.approved = False;
+		bol.truck_approved = False;
+	bol.save();
+	bols = Bol.objects.filter(approved=False).values()
+	context = {'bols': bols}
+	if request.user.groups.filter(name='Truck').exists():
+		return redirect('/smuckers/display-data')
+	return redirect('/smuckers/display-manager')
 
 def downloadbol(request, bol_id):
 	bol = Bol.objects.get(id=bol_id)
@@ -83,16 +125,21 @@ def downloadbol(request, bol_id):
 	return response
 
 def enter(request):
-	if request.method == 'POST' and request.FILES['inputfile']:
-		myfile = request.FILES['inputfile']
-		fs = FileSystemStorage()
-		filename = fs.save('smuckers/files/' + myfile.name, myfile)
-		uploaded_file_url = fs.url(filename)
-		f = open(uploaded_file_url, 'r')
-		f.readline()
-		stringList = []
-		for line in f:
-			stringList.append(line)
+
+	#if not request.user.groups.filter(name='Forklift').exists():
+
+
+	if request.method == 'POST': # and request.FILES['inputfile']:
+		# myfile = request.FILES['inputfile']
+		# fs = FileSystemStorage()
+		# filename = fs.save('smuckers/files/' + myfile.name, myfile)
+		# uploaded_file_url = fs.url(filename)
+		# f = open(uploaded_file_url, 'r')
+		# f.readline()
+		stringList = request.POST.get('inputfile', '').split('\n')
+		# stringList = []
+		# for line in f:
+		# 	stringList.append(line)
 
 		bol = Bol()
 
@@ -133,7 +180,7 @@ def enter(request):
 
 
 		#return render(request, 'smuckers/test.html', {'test': itemCode_date_dict}) 
-		return redirect('/smuckers/' + str(bol.id) + "/displaybol")
+		# return redirect('/smuckers/' + str(bol.id) + "/displaybol")
 	return render(request, 'smuckers/enter.html')
 
 def bolPost(request):
@@ -201,13 +248,17 @@ def loginPost(request):
 	user = authenticate(username=username, password=password)
 	if user is not None:
 		login(request, user)
+		if request.user.groups.filter(name='Forklift').exists():
+			return redirect('/smuckers/enter-data')
+		elif request.user.groups.filter(name='Truck').exists():
+			return redirect('/smuckers/display-data')
 		return redirect('/smuckers')
 	else:
 		return redirect('/smuckers/login')
 
 def logoutUser(request):
 	logout(request)
-	return redirect('/smuckers')
+	return redirect('/smuckers/login')
 
 
 

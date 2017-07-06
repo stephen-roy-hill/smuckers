@@ -14,6 +14,7 @@ class BolForm(forms.ModelForm):
 		model = Bol
 		fields = '__all__'
 		widgets = {
+			'truck_approved': forms.HiddenInput(),
             'approved': forms.HiddenInput(),
             'dock_number': forms.HiddenInput(),
             'seal_number': forms.HiddenInput(),

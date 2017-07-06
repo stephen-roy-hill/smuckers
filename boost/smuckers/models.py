@@ -28,6 +28,7 @@ class Bol(models.Model):
 	car_initial = models.CharField(max_length=50, default='', blank=True)
 	car_number = models.CharField(max_length=50, default='', blank=True)
 
+	truck_approved = models.BooleanField(default=False)
 	approved = models.BooleanField(default=False)
 
 class BolItem(models.Model):
