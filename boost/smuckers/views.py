@@ -234,6 +234,9 @@ def excelTest(request):
 	# 	test = 110001
 	return render(request, 'smuckers/test.html', {'test': test})
 
+def instructions(request):
+	return render(request, 'smuckers/instructions.html')
+
 #################################################
 #                                               #
 #                  LOGIN VIEWS                  #
@@ -259,9 +262,6 @@ def loginPost(request):
 def logoutUser(request):
 	logout(request)
 	return redirect('/smuckers/login')
-
-
-
 
 drum_weight_table = {
 	'51663':{'no_drum': 384, 'with_drum': 409},

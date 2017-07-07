@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^(?P<bol_id>[0-9]+)/displaybol/$', views.displaybol, name='displaybol'),
+    url(r'^instructions/$', views.instructions, name='instructions'),
     url(r'^display-data/$', views.display, name='display'),
     url(r'^display-manager/$', views.displayManager, name='display-manager'),
     url(r'^display-all/$', views.displayAll, name='display-all'),
