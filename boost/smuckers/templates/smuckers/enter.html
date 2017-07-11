@@ -20,9 +20,11 @@
 			      	$('#inputFileForm').show()
 			      	$('#sealNumberForm').hide()
 			      	$('#inputFile').focus()
-			      } else if($('#dockNumberForm').is(':hidden') && $('#sealNumberForm').is(':hidden')) {
-			      		$('#enterForm').submit()
+			      	$('#submit').show()
 			      }
+			      // else if($('#dockNumberForm').is(':hidden') && $('#sealNumberForm').is(':hidden')) {
+			      // 		$('#enterForm').submit()
+			      // }
 			      return false;
 			    }
 			  });
@@ -86,7 +88,7 @@
 				  	<!--<input type="file" name="inputfile" class="form-control" id="inputFile"/>-->
 				  	<textarea class="form-control" name="inputfile" rows="5" id="inputFile"></textarea>
 				  </div>
-				  <!--<button type="submit" class="btn btn-default">Submit</button>-->
+				  <button type="submit" style="float:right; display:none;" id="submit" class="btn btn-primary">Submit</button>
 				</form>
 			{% endblock %}
 			</div>
