@@ -6,8 +6,8 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.db.models import Max
 
-from smuckers.models import Bol, BolItem
-from smuckers.forms import BolForm, BolItemForm
+from smuckers.models import Bol, BolItem, ForkliftDriver
+from smuckers.forms import BolForm, BolItemForm, ForkliftDriverForm
 
 from openpyxl import load_workbook
 from openpyxl.writer.excel import save_virtual_workbook
@@ -152,6 +152,8 @@ def enter(request):
 		bol.date = datetime.datetime.now()
 		bol.dock_number = request.POST.get('dock_number', '')
 		bol.seal_number = request.POST.get('seal_number', '')
+		fdId = int(request.POST.get('forklift_driver', 0))
+		bol.forklift_driver = ForkliftDriver.objects.get(id=fdId)
 		bol.save()
 
 		stringList = remove_invalid_scans(stringList)
@@ -178,10 +180,10 @@ def enter(request):
 		bolItem.save()
 
 
-
+	forkliftDrivers = ForkliftDriver.objects.all()
 		#return render(request, 'smuckers/test.html', {'test': itemCode_date_dict}) 
 		# return redirect('/smuckers/' + str(bol.id) + "/displaybol")
-	return render(request, 'smuckers/enter.html')
+	return render(request, 'smuckers/enter.html', {'forkliftDrivers': forkliftDrivers})
 
 def bolPost(request):
 		bol_id = request.POST.get('id', '')
@@ -236,6 +238,18 @@ def excelTest(request):
 
 def instructions(request):
 	return render(request, 'smuckers/instructions.html')
+
+def forkliftEntry(request):
+	if request.method == 'POST':
+		first_name = request.POST.get('first_name', '')
+		last_name = request.POST.get('last_name', '')
+		forkliftDriver = ForkliftDriver()
+		forkliftDriver.first_name = first_name
+		forkliftDriver.last_name = last_name
+		forkliftDriver.save()
+
+	context = {'forkliftForm': ForkliftDriverForm()}
+	return render(request, 'smuckers/forkliftentry.html', context)
 
 #################################################
 #                                               #

@@ -58,6 +58,7 @@
 	            <li><a href="/smuckers/display-data">Driver Approval</a></li>
 	            <li><a href="/smuckers/display-manager">Manager Approval</a></li>
 	            <li><a href="/smuckers/enter-data">Enter Data</a></li>
+	            <li><a href="/smuckers/forklift-entry">Add Forklift Drivers</a></li>
 	            <li><a href="/smuckers/display-all">All Bols</a></li>
 
 	            {% endif %}
@@ -75,6 +76,14 @@
 	    	{% block content %}
 			  <form method="post" enctype="multipart/form-data" id="enterForm">
 			  	{% csrf_token %}
+			  	<div class="form-group" id="forkliftDriverForm">
+				    <label for="forkliftDriver">Forklift Driver</label>
+				    <select name="forklift_driver" class="form-control" id="forkliftDriver">
+				    {% for driver in forkliftDrivers %}
+				    	<option value="{{driver.id}}">{{driver.first_name}} {{driver.last_name}}</option>
+				    {% endfor %}
+				    </select>
+				  </div>
 				  <div class="form-group" id="dockNumberForm">
 				    <label for="dockNumber">Dock Number</label>
 				    <input type="text" name="dock_number" class="form-control" id="dockNumber" placeholder="Dock number"/>
