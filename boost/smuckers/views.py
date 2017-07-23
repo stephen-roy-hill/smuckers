@@ -86,16 +86,28 @@ def unapprovebol(request, bol_id):
 		return redirect('/smuckers/display-data')
 	return redirect('/smuckers/display-manager')
 
+def deletebol(request, bol_id):
+	bol = Bol.objects.get(id=bol_id)
+	bol.delete()
+	bols = Bol.objects.filter(approved=False).values()
+	context = {'bols': bols}
+
+	if request.user.groups.filter(name='Truck').exists():
+		return redirect('/smuckers/display-data')
+	return redirect('/smuckers/display-manager')
+
 def downloadbol(request, bol_id):
 	bol = Bol.objects.get(id=bol_id)
 	bolItems = BolItem.objects.filter(bol=bol)
 
+	print('Before load')
 	wb = load_workbook(filename = 'smuckers/resources/boltemplate.xlsx')
+	print('after load')
 	ws = wb["BOL"]
 	ws['E5'] = bol.bill_of_lading
 	ws['E7'] = bol.shipping_order
-	ws['G5'] = bol.shippers_number
-	ws['G7'] = bol.agents_number
+	ws['Q5'] = bol.shippers_number
+	ws['P7'] = bol.agents_number
 	ws['Q11'] = bol.date
 	ws['C13'] = bol.from_address
 
@@ -159,6 +171,8 @@ def enter(request):
 		stringList = remove_invalid_scans(stringList)
 		itemCode_date_unique_list = get_unique_drums(stringList)
 		itemCode_date_dict = calculate_count_of_unique_drums(stringList)
+		print(itemCode_date_dict)
+		print(drum_weight_table)
 		itemCode_date_dict = calculate_weight_of_unique_drums(itemCode_date_dict,drum_weight_table)
 
 		for key in itemCode_date_dict:
@@ -363,7 +377,10 @@ def calculate_count_of_unique_drums(scan_list):
 def calculate_weight_of_unique_drums(itemCode_date_dict, drum_weight_table):
 	for drum in itemCode_date_dict:
 		itemCode = drum[:5]
-		itemCode_date_dict[drum]['weight'] = itemCode_date_dict[drum]['count'] * drum_weight_table[itemCode]['with_drum']
+		print('Item Code: ' + itemCode)
+		count = itemCode_date_dict[drum]['count']
+		with_drum = drum_weight_table[itemCode]['with_drum']
+		itemCode_date_dict[drum]['weight'] = count * with_drum
 	return itemCode_date_dict
 
 #left

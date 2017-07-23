@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^display-all/$', views.displayAll, name='display-all'),
     url(r'^(?P<bol_id>[0-9]+)/approvebol/$', views.approvebol, name='approvebol'),
     url(r'^(?P<bol_id>[0-9]+)/unapprovebol/$', views.unapprovebol, name='unapprovebol'),
+    url(r'^(?P<bol_id>[0-9]+)/deletebol/$', views.deletebol, name='deletebol'),
     url(r'^(?P<bol_id>[0-9]+)/downloadbol/$', views.downloadbol, name='downloadbol'),
     url(r'^bolpost/$', views.bolPost, name='bolpost'),
     url(r'^bolitempost/$', views.bolItemPost, name='bolitempost'),
