@@ -24,7 +24,7 @@
 	          	<li><a href="/smuckers/instructions">Instructions</a></li>
 	            <li><a href="/smuckers/display-data">Driver Approval</a></li>
 	            {% if request.user|has_group:"Manager" %}
-	            <li><a href="/smuckers/display-manager">Manager Approval</a></li>
+	            <!-- <li><a href="/smuckers/display-manager">Manager Approval</a></li> -->
 	            <li><a href="/smuckers/enter-data">Enter Data</a></li>
 	            <li><a href="/smuckers/forklift-entry">Add Forklift Drivers</a></li>
 	            {% endif %}
@@ -44,7 +44,7 @@
 	    	<ol>
 	    	{% for bol in bols %}
 		    <li>
-		    	<a href="/smuckers/{{ bol.id }}/displaybol">{{ bol.bol_number }}</a>
+		    	<a href="/smuckers/{{ bol.id }}/displaybol">{{ bol.bol_number }}: </a>{{bol.date}}
 	    	</li>
 	    	{% endfor %}
 	    	</ol>

@@ -283,7 +283,7 @@ def loginPost(request):
 			return redirect('/smuckers/enter-data')
 		elif request.user.groups.filter(name='Truck').exists():
 			return redirect('/smuckers/display-data')
-		return redirect('/smuckers/display-manager')
+		return redirect('/smuckers/display-all')
 	else:
 		return redirect('/smuckers/login')
 
@@ -393,6 +393,7 @@ def calculate_pallet_count(itemCode_date_dict):
 
 #right
 def calculate_pallet_weight(pallet_count):
+	#30?
 	pallet_weight = pallet_count * 7.5
 	return pallet_weight
 
