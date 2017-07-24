@@ -70,7 +70,7 @@ def approvebol(request, bol_id):
 
 	if request.user.groups.filter(name='Truck').exists():
 		return redirect('/smuckers/display-data')
-	return redirect('/smuckers/display-manager')
+	return redirect('/smuckers/display-all')
 
 def unapprovebol(request, bol_id):
 	bol = Bol.objects.get(id=bol_id)
@@ -84,7 +84,7 @@ def unapprovebol(request, bol_id):
 	context = {'bols': bols}
 	if request.user.groups.filter(name='Truck').exists():
 		return redirect('/smuckers/display-data')
-	return redirect('/smuckers/display-manager')
+	return redirect('/smuckers/display-all')
 
 def deletebol(request, bol_id):
 	bol = Bol.objects.get(id=bol_id)
@@ -94,7 +94,7 @@ def deletebol(request, bol_id):
 
 	if request.user.groups.filter(name='Truck').exists():
 		return redirect('/smuckers/display-data')
-	return redirect('/smuckers/display-manager')
+	return redirect('/smuckers/display-all')
 
 def downloadbol(request, bol_id):
 	bol = Bol.objects.get(id=bol_id)
