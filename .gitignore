@@ -4,3 +4,7 @@ boost/db\.sqlite3
 boost/smuckers/__pycache__/urls\.cpython-36\.pyc
 
 boost/smuckers/__pycache__/views\.cpython-36\.pyc
+
+boost/smuckers/__pycache__/models\.cpython-36\.pyc
+
+boost/smuckers/migrations/__pycache__/0009_auto_20170724_0018\.cpython-36\.pyc
