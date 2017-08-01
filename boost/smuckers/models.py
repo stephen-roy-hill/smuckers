@@ -10,6 +10,14 @@ class ForkliftDriver(models.Model):
 	first_name = models.CharField(max_length=50, default='', blank=True)
 	last_name = models.CharField(max_length=50, default='', blank=True)
 
+class TruckDriver(models.Model):
+
+	def __str__(self):
+		return self.first_name + ' ' + self.last_name
+
+	first_name = models.CharField(max_length=50, default='', blank=True)
+	last_name = models.CharField(max_length=50, default='', blank=True)
+
 class Bol(models.Model):
 
 	def __str__(self):

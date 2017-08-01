@@ -26,6 +26,10 @@ import datetime
 #manager_user
 #guest123
 
+# Where do forklift initials and signiture goes
+# 30 lbs per pallet
+# Add truck drivers
+
 
 def index(request):
     return render(request, 'smuckers/index.html')
@@ -130,6 +134,8 @@ def downloadbol(request, bol_id):
 		if bolItem.check_column:
 			ws['M' + str(row)] = 'YES'
 		row += 1
+
+	ws['D40'] = bol.seal_number
 
 	wb.save('smuckers/resources/downloads/download.xlsm')
 
