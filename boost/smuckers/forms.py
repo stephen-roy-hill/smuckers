@@ -1,6 +1,6 @@
 from django import forms
 
-from smuckers.models import Bol, BolItem, ForkliftDriver
+from smuckers.models import Bol, BolItem, ForkliftDriver, TruckDriver
 
 class BolForm(forms.ModelForm):
 
@@ -46,6 +46,20 @@ class ForkliftDriverForm(forms.ModelForm):
 
 	class Meta:
 		model = ForkliftDriver
+		fields = '__all__'
+		widgets = {
+        }
+
+class TruckDriverForm(forms.ModelForm):
+
+	def __init__(self, *args, **kwargs):
+	    super(TruckDriverForm, self).__init__(*args, **kwargs)
+
+	    for key in self.fields:
+	        self.fields[key].required = False
+
+	class Meta:
+		model = TruckDriver
 		fields = '__all__'
 		widgets = {
         }

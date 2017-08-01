@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^(?P<bol_id>[0-9]+)/displaybol/$', views.displaybol, name='displaybol'),
     url(r'^instructions/$', views.instructions, name='instructions'),
     url(r'^forklift-entry/$', views.forkliftEntry, name='forklift-entry'),
+    url(r'^truck-entry/$', views.truckEntry, name='truck-entry'),
     url(r'^display-data/$', views.display, name='display'),
     url(r'^display-manager/$', views.displayManager, name='display-manager'),
     url(r'^display-all/$', views.displayAll, name='display-all'),

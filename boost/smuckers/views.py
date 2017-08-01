@@ -6,8 +6,8 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.db.models import Max
 
-from smuckers.models import Bol, BolItem, ForkliftDriver
-from smuckers.forms import BolForm, BolItemForm, ForkliftDriverForm
+from smuckers.models import Bol, BolItem, ForkliftDriver, TruckDriver
+from smuckers.forms import BolForm, BolItemForm, ForkliftDriverForm, TruckDriverForm
 
 from openpyxl import load_workbook
 from openpyxl.writer.excel import save_virtual_workbook
@@ -271,6 +271,17 @@ def forkliftEntry(request):
 	context = {'forkliftForm': ForkliftDriverForm()}
 	return render(request, 'smuckers/forkliftentry.html', context)
 
+def truckEntry(request):
+	if request.method == 'POST':
+		first_name = request.POST.get('first_name', '')
+		last_name = request.POST.get('last_name', '')
+		truckDriver = TruckDriver()
+		truckDriver.first_name = first_name
+		truckDriver.last_name = last_name
+		truckDriver.save()
+
+	context = {'forkliftForm': ForkliftDriverForm()}
+	return render(request, 'smuckers/truckentry.html', context)
 #################################################
 #                                               #
 #                  LOGIN VIEWS                  #
