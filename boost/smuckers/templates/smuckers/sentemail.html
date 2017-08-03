@@ -41,10 +41,10 @@
 	      </div>
 	    </nav>
 	    <div class="container">
-	    	<form action="/smuckers/forklift-entry/" method="post" class="col-md-6" style="margin: 0 auto; float:none;">
+	    	<form action="/smuckers/sent-email-entry/" method="post" class="col-md-6" style="margin: 0 auto; float:none;">
 		    	{% csrf_token %}
 		    	<table class="table">
-		    	{{forkliftForm}}
+		    	{{sentEmailForm}}
 		    	<tr>
 		    		<td></td>
 			    	<td>
@@ -52,6 +52,18 @@
 			    	</td>
 		    	</tr>
 		    	</table>
+		    </form>
+		    <form action="/smuckers/sent-email-entry/" method="post" class="col-md-6" style="margin: 0 auto; float:none;">
+		    	{% csrf_token %}
+			    <div class="form-group">
+				    <label for="sentEmail">Forklift Driver</label>
+				    <select name="sent_email" class="form-control" id="sentEmail">
+				    {% for email in sentEmails %}
+				    	<option value="{{email.id}}">{{email.email}}</option>
+				    {% endfor %}
+				    </select>
+				</div>
+				<button type="submit" class="btn btn-danger" style="float:right;">Delete</button>
 		    </form>
 	    </div>
 	</body>

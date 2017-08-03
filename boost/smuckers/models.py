@@ -23,6 +23,8 @@ class Bol(models.Model):
 	def __str__(self):
 	   return 'Bol: ' + str(self.bol_number)
 
+	truck_driver = models.ForeignKey(TruckDriver, default=True, on_delete=models.SET_DEFAULT)
+
 	bol_number = models.IntegerField(default=0)
 
 	dock_number = models.CharField(max_length=100, default='', blank=True)
@@ -61,3 +63,10 @@ class BolItem(models.Model):
 	weight = models.IntegerField(default=0)
 	class_or_rate = models.CharField(max_length=50, default='')
 	check_column = models.BooleanField(default=False)
+
+class SentEmail(models.Model):
+
+	def __str__(self):
+	   return self.email
+
+	email = models.CharField(max_length=200, default='', blank=True)

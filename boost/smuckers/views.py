@@ -6,11 +6,14 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.db.models import Max
 
-from smuckers.models import Bol, BolItem, ForkliftDriver, TruckDriver
-from smuckers.forms import BolForm, BolItemForm, ForkliftDriverForm, TruckDriverForm
+from smuckers.models import Bol, BolItem, ForkliftDriver, TruckDriver, SentEmail
+from smuckers.forms import BolForm, BolItemForm, ForkliftDriverForm, TruckDriverForm, SentEmailForm
 
 from openpyxl import load_workbook
 from openpyxl.writer.excel import save_virtual_workbook
+
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 
 import math
 import datetime
@@ -59,7 +62,9 @@ def displaybol(request, bol_id):
 	for bolItem in bolItems:
 		bolItemArray.append({'item': bolItem,'form': BolItemForm(bolItem)})#, prefix=bolItem['id']))
 
-	context = {'bolItemsForm': bolItemArray, 'bol': bol, 'bolForm': bolForm}
+	truckDrivers = TruckDriver.objects.all()
+
+	context = {'bolItemsForm': bolItemArray, 'bol': bol, 'bolForm': bolForm, 'truckDrivers': truckDrivers}
 	return render(request, 'smuckers/displaybol.html', context)
 
 def approvebol(request, bol_id):
@@ -71,6 +76,21 @@ def approvebol(request, bol_id):
 	bol.save();
 	bols = Bol.objects.filter(approved=False).values()
 	context = {'bols': bols}
+
+	# Send Email
+	saveFile(bol_id)
+	sentEmails = SentEmail.objects.all()
+	emails = []
+	for email in sentEmails:
+		emails.append(email.email)
+	emailMessage = EmailMessage(
+	    str(bol.bol_number) + ': ' + bol.date.strftime("%Y-%m-%d %H:%M"),
+	    '',
+	    'from@example.com',
+	    emails
+	)
+	emailMessage.attach_file('smuckers/resources/downloads/download.xlsm')
+	emailMessage.send()
 
 	if request.user.groups.filter(name='Truck').exists():
 		return redirect('/smuckers/display-data')
@@ -101,45 +121,7 @@ def deletebol(request, bol_id):
 	return redirect('/smuckers/display-all')
 
 def downloadbol(request, bol_id):
-	bol = Bol.objects.get(id=bol_id)
-	bolItems = BolItem.objects.filter(bol=bol)
-
-	print('Before load')
-	wb = load_workbook(filename = 'smuckers/resources/boltemplate.xlsx')
-	print('after load')
-	ws = wb["BOL"]
-	ws['E5'] = bol.bill_of_lading
-	ws['E7'] = bol.shipping_order
-	ws['Q5'] = bol.shippers_number
-	ws['P7'] = bol.agents_number
-	ws['Q11'] = bol.date
-	ws['C13'] = bol.from_address
-
-	ws['D19'] = bol.cosigned_to
-	ws['D21'] = bol.destination
-	ws['I21'] = bol.state_of
-	ws['N21'] = bol.county_of
-	ws['C23'] = bol.route
-	ws['E25'] = bol.delivering_carrier
-	ws['J25'] = bol.car_initial
-	ws['O25'] = bol.car_number
-
-	row = 28
-
-	for bolItem in bolItems:
-		ws['A' + str(row)] = bolItem.packages
-		ws['C' + str(row)] = bolItem.description
-		ws['I' + str(row)] = bolItem.weight
-		ws['K' + str(row)] = bolItem.class_or_rate
-		if bolItem.check_column:
-			ws['M' + str(row)] = 'YES'
-		row += 1
-
-	ws['D40'] = bol.seal_number
-
-	wb.save('smuckers/resources/downloads/download.xlsm')
-
-	response = HttpResponse(save_virtual_workbook(wb), content_type='application/vnd.ms-excel')
+	response = HttpResponse(saveFile(bol_id), content_type='application/vnd.ms-excel')
 	return response
 
 def enter(request):
@@ -249,12 +231,16 @@ def bolItemPost(request):
 	# return render(request, 'smuckers/test.html', {'test': test})
 
 def excelTest(request):
-	test = Bol.objects.all().aggregate(Max('bol_number'))
-	# if test['bol_number__max'] == 0:
-	# 	test = 110000
-	# else:
-	# 	test = 110001
-	return render(request, 'smuckers/test.html', {'test': test})
+	emailMessage = EmailMessage(
+	    'Subject',
+	    'Body',
+	    'from@example.com',
+	    ['dpu2010@gmail.com']
+	)
+	emailMessage.attach_file('smuckers/resources/downloads/download.xlsm')
+	emailMessage.send()
+
+	return render(request, 'smuckers/test.html')
 
 def instructions(request):
 	return render(request, 'smuckers/instructions.html')
@@ -282,6 +268,23 @@ def truckEntry(request):
 
 	context = {'forkliftForm': ForkliftDriverForm()}
 	return render(request, 'smuckers/truckentry.html', context)
+
+def sentEmailEntry(request):
+	if request.method == 'POST':
+		email = request.POST.get('email', '')
+		email_id = request.POST.get('sent_email', '')
+		if email != '':
+			sentEmail = SentEmail()
+			sentEmail.email = email
+			sentEmail.save()
+		else:
+			email_id = request.POST.get('sent_email', '')
+			email = SentEmail.objects.get(id=email_id)
+			email.delete()
+
+	sentEmails = SentEmail.objects.all()
+	context = {'sentEmailForm': SentEmailForm(), 'sentEmails': sentEmails}
+	return render(request, 'smuckers/sentemail.html', context)
 #################################################
 #                                               #
 #                  LOGIN VIEWS                  #
@@ -307,6 +310,45 @@ def loginPost(request):
 def logoutUser(request):
 	logout(request)
 	return redirect('/smuckers/login')
+
+def saveFile(bol_id):
+	bol = Bol.objects.get(id=bol_id)
+	bolItems = BolItem.objects.filter(bol=bol)
+
+	wb = load_workbook(filename = 'smuckers/resources/boltemplate.xlsx')
+	ws = wb["BOL"]
+	ws['E5'] = bol.bill_of_lading
+	ws['E7'] = bol.shipping_order
+	ws['Q5'] = bol.shippers_number
+	ws['P7'] = bol.agents_number
+	ws['Q11'] = bol.date
+	ws['C13'] = bol.from_address
+
+	ws['D19'] = bol.cosigned_to
+	ws['D21'] = bol.destination
+	ws['I21'] = bol.state_of
+	ws['N21'] = bol.county_of
+	ws['C23'] = bol.route
+	ws['E25'] = bol.delivering_carrier
+	ws['J25'] = bol.car_initial
+	ws['O25'] = bol.car_number
+	ws['K53'] = bol.truck_driver.first_name + ' ' + bol.truck_driver.last_name
+
+	row = 28
+
+	for bolItem in bolItems:
+		ws['A' + str(row)] = bolItem.packages
+		ws['C' + str(row)] = bolItem.description
+		ws['I' + str(row)] = bolItem.weight
+		ws['K' + str(row)] = bolItem.class_or_rate
+		if bolItem.check_column:
+			ws['M' + str(row)] = 'YES'
+		row += 1
+
+	ws['D40'] = bol.seal_number
+
+	wb.save('smuckers/resources/downloads/download.xlsm')
+	return save_virtual_workbook(wb)
 
 drum_weight_table = {
 	'51663':{'no_drum': 384, 'with_drum': 409},

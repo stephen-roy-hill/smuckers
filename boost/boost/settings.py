@@ -119,3 +119,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Email stuff
+# EMAIL_HOST = 'smtp.sparkpostmail.com'
+# EMAIL_HOST_USER = 'SMTP_Injection'
+# EMAIL_HOST_PASSWORD = 'f12fc70dcb8b99cdfe1d7e68ae20c0b4ddf4903f'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'smuckersbol@gmail.com'
+EMAIL_HOST_PASSWORD = '6tp9FwHc2K1R'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

@@ -12,3 +12,5 @@ boost/smuckers/migrations/__pycache__/0009_auto_20170724_0018\.cpython-36\.pyc
 boost/smuckers/migrations/__pycache__/0010_truckdriver\.cpython-36\.pyc
 
 *.pyc
+
+boost/smuckers/resources/downloads/download\.xlsm
