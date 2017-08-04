@@ -453,6 +453,6 @@ def calculate_pallet_count(itemCode_date_dict):
 #right
 def calculate_pallet_weight(pallet_count):
 	#30?
-	pallet_weight = pallet_count * 7.5
+	pallet_weight = pallet_count * 30
 	return pallet_weight
 
