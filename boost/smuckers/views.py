@@ -334,18 +334,24 @@ def saveFile(bol_id):
 	ws['O25'] = bol.car_number
 	ws['K53'] = bol.truck_driver.first_name + ' ' + bol.truck_driver.last_name
 
+	ws['O38'] = bol.forklift_driver.first_name[0] + bol.forklift_driver.last_name[0]
+
 	row = 28
+
+	total_weight = 0
 
 	for bolItem in bolItems:
 		ws['A' + str(row)] = bolItem.packages
 		ws['C' + str(row)] = bolItem.description
 		ws['I' + str(row)] = bolItem.weight
+		total_weight += bolItem.weight
 		ws['K' + str(row)] = bolItem.class_or_rate
 		if bolItem.check_column:
 			ws['M' + str(row)] = 'YES'
 		row += 1
 
 	ws['D40'] = bol.seal_number
+	ws['I40'] = str(total_weight)
 
 	wb.save('smuckers/resources/downloads/download.xlsm')
 	return save_virtual_workbook(wb)
