@@ -1,6 +1,6 @@
 from django import forms
 
-from smuckers.models import Bol, BolItem, ForkliftDriver, TruckDriver, SentEmail
+from smuckers.models import Bol, BolItem, ForkliftDriver, TruckDriver, SentEmail, Weight
 
 class BolForm(forms.ModelForm):
 
@@ -74,6 +74,20 @@ class SentEmailForm(forms.ModelForm):
 
 	class Meta:
 		model = SentEmail
+		fields = '__all__'
+		widgets = {
+        }
+
+class WeightForm(forms.ModelForm):
+
+	def __init__(self, *args, **kwargs):
+	    super(WeightForm, self).__init__(*args, **kwargs)
+
+	    for key in self.fields:
+	        self.fields[key].required = False
+
+	class Meta:
+		model = Weight
 		fields = '__all__'
 		widgets = {
         }

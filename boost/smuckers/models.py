@@ -70,3 +70,12 @@ class SentEmail(models.Model):
 	   return self.email
 
 	email = models.CharField(max_length=200, default='', blank=True)
+
+class Weight(models.Model):
+
+	def __str__(self):
+		return self.item_number
+
+	item_number = models.CharField(max_length=10, default='', blank=True)
+	with_drum = models.IntegerField(default=0)
+	without_drum = models.IntegerField(default=0)
