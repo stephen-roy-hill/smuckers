@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^forklift-entry/$', views.forkliftEntry, name='forklift-entry'),
     url(r'^truck-entry/$', views.truckEntry, name='truck-entry'),
     url(r'^sent-email-entry/$', views.sentEmailEntry, name='sent-email-entry'),
+    url(r'^weight-entry/$', views.weightEntry, name='weight-entry'),
     url(r'^display-data/$', views.display, name='display'),
     url(r'^display-manager/$', views.displayManager, name='display-manager'),
     url(r'^display-all/$', views.displayAll, name='display-all'),

@@ -6,8 +6,8 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.db.models import Max
 
-from smuckers.models import Bol, BolItem, ForkliftDriver, TruckDriver, SentEmail
-from smuckers.forms import BolForm, BolItemForm, ForkliftDriverForm, TruckDriverForm, SentEmailForm
+from smuckers.models import Bol, BolItem, ForkliftDriver, TruckDriver, SentEmail, Weight
+from smuckers.forms import BolForm, BolItemForm, ForkliftDriverForm, TruckDriverForm, SentEmailForm, WeightForm
 
 from openpyxl import load_workbook
 from openpyxl.writer.excel import save_virtual_workbook
@@ -156,11 +156,17 @@ def enter(request):
 		bol.forklift_driver = ForkliftDriver.objects.get(id=fdId)
 		bol.save()
 
+		weights = Weight.objects.all()
+		drum_weight_table = {}
+		for weight in weights:
+			weight_data = {}
+			weight_data['no_drum'] = weight.without_drum
+			weight_data['with_drum'] = weight.with_drum
+			drum_weight_table[weight.item_number] = weight_data
+
 		stringList = remove_invalid_scans(stringList)
 		itemCode_date_unique_list = get_unique_drums(stringList)
 		itemCode_date_dict = calculate_count_of_unique_drums(stringList)
-		print(itemCode_date_dict)
-		print(drum_weight_table)
 		itemCode_date_dict = calculate_weight_of_unique_drums(itemCode_date_dict,drum_weight_table)
 
 		for key in itemCode_date_dict:
@@ -285,6 +291,24 @@ def sentEmailEntry(request):
 	sentEmails = SentEmail.objects.all()
 	context = {'sentEmailForm': SentEmailForm(), 'sentEmails': sentEmails}
 	return render(request, 'smuckers/sentemail.html', context)
+
+def weightEntry(request):
+	if request.method == 'POST':
+		email = request.POST.get('email', '')
+		weight_id = request.POST.get('weight_id', '')
+		if weight_id == '':
+			weight = Weight()
+			weight.item_number = request.POST.get('item_number', '')
+			weight.with_drum = request.POST.get('with_drum', '')
+			weight.without_drum = request.POST.get('without_drum', '')
+			weight.save()
+		else:
+			weight = Weight.objects.get(id=weight_id)
+			weight.delete()
+
+	weights = Weight.objects.all()
+	context = {'weightForm': WeightForm(), 'weights': weights}
+	return render(request, 'smuckers/weight.html', context)
 #################################################
 #                                               #
 #                  LOGIN VIEWS                  #
@@ -356,58 +380,58 @@ def saveFile(bol_id):
 	wb.save('smuckers/resources/downloads/download.xlsm')
 	return save_virtual_workbook(wb)
 
-drum_weight_table = {
-	'51663':{'no_drum': 384, 'with_drum': 409},
-	'10834':{'no_drum': 390, 'with_drum': 415},
-	'51359':{'no_drum': 384, 'with_drum': 409},
-	'50798':{'no_drum': 384, 'with_drum': 409},
-	'51581':{'no_drum': 340, 'with_drum': 365},
-	'50688':{'no_drum': 340, 'with_drum': 365},
-	'50629':{'no_drum': 340, 'with_drum': 365},
-	'50628':{'no_drum': 340, 'with_drum': 365},
-	'10449':{'no_drum': 384, 'with_drum': 409},
-	'50670':{'no_drum': 384, 'with_drum': 409},
-	'10854':{'no_drum': 452, 'with_drum': 477},
-	'10523':{'no_drum': 340, 'with_drum': 365},
-	'51559':{'no_drum': 340, 'with_drum': 365},
-	'50552':{'no_drum': 384, 'with_drum': 409},
-	'50290':{'no_drum': 384, 'with_drum': 409},
-	'51325':{'no_drum': 340, 'with_drum': 365},
-	'50551':{'no_drum': 384, 'with_drum': 409},
-	'51874':{'no_drum': 384, 'with_drum': 409},
-	'11170':{'no_drum': 384, 'with_drum': 409},
-	'50668':{'no_drum': 340, 'with_drum': 365},
-	'12015':{'no_drum': 384, 'with_drum': 409},
-	'12012':{'no_drum': 384, 'with_drum': 409},
-	'10504':{'no_drum': 384, 'with_drum': 409},
-	'11185':{'no_drum': 452, 'with_drum': 477},
-	'11367':{'no_drum': 452, 'with_drum': 477},
-	'11150':{'no_drum': 452, 'with_drum': 477},
-	'10254':{'no_drum': 340, 'with_drum': 365},
-	'10840':{'no_drum': 452, 'with_drum': 477},
-	'10122':{'no_drum': 452, 'with_drum': 477},
-	'12020':{'no_drum': 370, 'with_drum': 395},
-	'51358':{'no_drum': 384, 'with_drum': 409},
-	'51676':{'no_drum': 384, 'with_drum': 409},
-	'50687':{'no_drum': 340, 'with_drum': 365},
-	'50686':{'no_drum': 340, 'with_drum': 365},
-	'10757':{'no_drum': 340, 'with_drum': 365},
-	'13129':{'no_drum': 384, 'with_drum': 409},
-	'50674':{'no_drum': 384, 'with_drum': 409},
-	'11352':{'no_drum': 384, 'with_drum': 409},
-	'10530':{'no_drum': 452, 'with_drum': 477},
-	'12075':{'no_drum': 452, 'with_drum': 477},
-	'10258':{'no_drum': 452, 'with_drum': 477},
-	'51692':{'no_drum': 452, 'with_drum': 477},
-	'13249':{'no_drum': 452, 'with_drum': 477},
-	'13157':{'no_drum': 452, 'with_drum': 477},
-	'13114':{'no_drum': 384, 'with_drum': 409},
-	'13265':{'no_drum': 452, 'with_drum': 477},
-	'13139':{'no_drum': 452, 'with_drum': 477},
-	'13481':{'no_drum': 452, 'with_drum': 477},
-	'13153':{'no_drum': 360, 'with_drum': 385},
-	'13277':{'no_drum': 452, 'with_drum': 477}
-}
+# drum_weight_table = {
+# 	'51663':{'no_drum': 384, 'with_drum': 409},
+# 	'10834':{'no_drum': 390, 'with_drum': 415},
+# 	'51359':{'no_drum': 384, 'with_drum': 409},
+# 	'50798':{'no_drum': 384, 'with_drum': 409},
+# 	'51581':{'no_drum': 340, 'with_drum': 365},
+# 	'50688':{'no_drum': 340, 'with_drum': 365},
+# 	'50629':{'no_drum': 340, 'with_drum': 365},
+# 	'50628':{'no_drum': 340, 'with_drum': 365},
+# 	'10449':{'no_drum': 384, 'with_drum': 409},
+# 	'50670':{'no_drum': 384, 'with_drum': 409},
+# 	'10854':{'no_drum': 452, 'with_drum': 477},
+# 	'10523':{'no_drum': 340, 'with_drum': 365},
+# 	'51559':{'no_drum': 340, 'with_drum': 365},
+# 	'50552':{'no_drum': 384, 'with_drum': 409},
+# 	'50290':{'no_drum': 384, 'with_drum': 409},
+# 	'51325':{'no_drum': 340, 'with_drum': 365},
+# 	'50551':{'no_drum': 384, 'with_drum': 409},
+# 	'51874':{'no_drum': 384, 'with_drum': 409},
+# 	'11170':{'no_drum': 384, 'with_drum': 409},
+# 	'50668':{'no_drum': 340, 'with_drum': 365},
+# 	'12015':{'no_drum': 384, 'with_drum': 409},
+# 	'12012':{'no_drum': 384, 'with_drum': 409},
+# 	'10504':{'no_drum': 384, 'with_drum': 409},
+# 	'11185':{'no_drum': 452, 'with_drum': 477},
+# 	'11367':{'no_drum': 452, 'with_drum': 477},
+# 	'11150':{'no_drum': 452, 'with_drum': 477},
+# 	'10254':{'no_drum': 340, 'with_drum': 365},
+# 	'10840':{'no_drum': 452, 'with_drum': 477},
+# 	'10122':{'no_drum': 452, 'with_drum': 477},
+# 	'12020':{'no_drum': 370, 'with_drum': 395},
+# 	'51358':{'no_drum': 384, 'with_drum': 409},
+# 	'51676':{'no_drum': 384, 'with_drum': 409},
+# 	'50687':{'no_drum': 340, 'with_drum': 365},
+# 	'50686':{'no_drum': 340, 'with_drum': 365},
+# 	'10757':{'no_drum': 340, 'with_drum': 365},
+# 	'13129':{'no_drum': 384, 'with_drum': 409},
+# 	'50674':{'no_drum': 384, 'with_drum': 409},
+# 	'11352':{'no_drum': 384, 'with_drum': 409},
+# 	'10530':{'no_drum': 452, 'with_drum': 477},
+# 	'12075':{'no_drum': 452, 'with_drum': 477},
+# 	'10258':{'no_drum': 452, 'with_drum': 477},
+# 	'51692':{'no_drum': 452, 'with_drum': 477},
+# 	'13249':{'no_drum': 452, 'with_drum': 477},
+# 	'13157':{'no_drum': 452, 'with_drum': 477},
+# 	'13114':{'no_drum': 384, 'with_drum': 409},
+# 	'13265':{'no_drum': 452, 'with_drum': 477},
+# 	'13139':{'no_drum': 452, 'with_drum': 477},
+# 	'13481':{'no_drum': 452, 'with_drum': 477},
+# 	'13153':{'no_drum': 360, 'with_drum': 385},
+# 	'13277':{'no_drum': 452, 'with_drum': 477}
+# }
 
 #Straight Forward
 def remove_invalid_scans(scan_list):
